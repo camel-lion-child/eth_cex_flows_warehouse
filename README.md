@@ -2,7 +2,9 @@
 
 # ETH CEX Flows Warehouse (Dune + Binance + Etherscan)
 
-A small analytics engineering project that builds a DuckDB warehouse combining:
+ETH CEX Flows Warehouse is a lightweight analytics engineering project designed to study Ethereum liquidity dynamics across centralized exchanges.
+
+The project focuses on understanding how liquidity positioning and network conditions evolve relative to market price, using a clean and reproducible data workflow. It builds a DuckDB warehouse combining:
 - **Dune**: market-wide ETH CEX flows (inflow/outflow/netflow)
 - **Binance**: ETH daily price and returns
 - **Etherscan (network sample)**: Ethereum network activity metrics (base fee, tx count, gas used ratio)
