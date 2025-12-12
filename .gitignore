@@ -1,1 +1,26 @@
+# Python virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
 .env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (raw / processed / analysis)
+data/raw/
+data/processed/
+data/analysis/
+
+# DuckDB
+warehouse/
+*.duckdb
+
+# OS
+.DS_Store
+
