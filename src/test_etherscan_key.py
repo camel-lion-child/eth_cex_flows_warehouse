@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 
 print(">>> Running test_etherscan_key.py (USING V2 API)")
 
-# Load .env
 load_dotenv()
 api_key = os.getenv("ETHERSCAN_API_KEY")
 
@@ -14,7 +13,6 @@ if not api_key:
     print("!!! ERROR: api_key is None. Check your .env file.")
     raise SystemExit(1)
 
-# V2 endpoint
 url = "https://api.etherscan.io/v2/api"
 
 params = {

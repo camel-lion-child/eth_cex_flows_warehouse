@@ -30,15 +30,13 @@ def fetch_binance_kline(limit=1000, end_time=None):
     data = r.json()
 
     if not isinstance(data, list):
-        print("⚠️ Error:", data)
+        print("Error:", data)
         return pd.DataFrame()
 
     rows = []
     for k in data:
-        # Binance kline format:
-        # [open_time, open, high, low, close, volume, close_time, ...]
         ts = int(k[0]) // 1000
-        price = float(k[4])  # close price
+        price = float(k[4])  
 
         rows.append({"timestamp": ts, "price_usd": price})
 
@@ -51,7 +49,7 @@ def fetch_full_history():
 
     print("🔎 Fetching full ETH price history from Binance...")
 
-    for i in range(5):  # 5 chunks = 5000 days > 13 years
+    for i in range(5): 
         print(f"   → Fetching chunk {i+1}/5")
 
         df = fetch_binance_kline(limit=1000, end_time=end_time)
@@ -60,7 +58,6 @@ def fetch_full_history():
 
         all_df.append(df)
 
-        # Update end_time to go further back in history
         oldest_ts = df["timestamp"].min() * 1000
         end_time = oldest_ts - 1
 
@@ -82,10 +79,10 @@ def add_returns(df):
 if __name__ == "__main__":
     df = fetch_full_history()
 
-    print("📈 Computing returns & volatility...")
+    print("Computing returns & volatility...")
     df = add_returns(df)
 
     df.to_csv(OUT_PATH, index=False)
 
-    print(f"✅ DONE → {OUT_PATH}")
+    print(f"DONE → {OUT_PATH}")
     print(">>> Running fetch_eth_price_binance.py (USING V2 API)")  

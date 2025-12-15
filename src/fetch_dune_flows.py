@@ -4,8 +4,7 @@ import requests
 import pandas as pd
 from dotenv import load_dotenv
 
-# ==== CONFIG ====
-QUERY_ID = 5971722  # từ link Dune của bạn
+QUERY_ID = 5971722  
 BASE_URL = "https://api.dune.com/api/v1"
 
 RAW_JSON_PATH = "data/raw/dune/cex_eth_flows_raw.json"
@@ -28,7 +27,6 @@ def run_query(api_key: str) -> str:
     headers = {"x-dune-api-key": api_key}
     resp = requests.post(url, headers=headers)
     data = resp.json()
-    # print("Run query response:", data)  # optional debug
     execution_id = data.get("execution_id")
     if not execution_id:
         raise RuntimeError(f"Failed to start query: {data}")
@@ -92,22 +90,22 @@ def normalize_results_to_df(results: dict) -> pd.DataFrame:
 if __name__ == "__main__":
     api_key = get_api_key()
 
-    print("🚀 Running Dune query...")
+    print("Running Dune query...")
     execution_id = run_query(api_key)
     print(f"   → execution_id = {execution_id}")
 
     wait_for_results(api_key, execution_id)
 
-    print("📥 Fetching results...")
+    print("Fetching results...")
     results = fetch_results(api_key, execution_id)
 
 
     with open(RAW_JSON_PATH, "w") as f:
         f.write(str(results))
 
-    print("🧹 Normalizing to DataFrame...")
+    print("Normalizing to DataFrame...")
     df = normalize_results_to_df(results)
 
     df.to_csv(CSV_OUT_PATH, index=False)
-    print(f"✅ DONE → {CSV_OUT_PATH}")
+    print(f"DONE → {CSV_OUT_PATH}")
     print(">>> Running fetch_dune_flows.py (USING V2 API)") 

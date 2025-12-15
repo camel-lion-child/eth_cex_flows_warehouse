@@ -5,9 +5,9 @@ import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime
 
-# ✅ V2 endpoint
+
 ETHERSCAN_V2_BASE = "https://api.etherscan.io/v2/api"
-CHAIN_ID = 1  # Ethereum mainnet
+CHAIN_ID = 1  
 
 DUNE_PATH = "data/processed/dune/cex_eth_flows_daily.csv"
 OUT_PATH = "data/processed/etherscan/network_sample_daily.csv"
@@ -67,10 +67,10 @@ def ensure_parent_dir(path: str) -> None:
 
 
 if __name__ == "__main__":
-    print("🚀 Starting Etherscan V2 network sample fetch...")
-    print("📌 DUNE_PATH =", os.path.abspath(DUNE_PATH))
-    print("📌 OUT_PATH  =", os.path.abspath(OUT_PATH))
-    print("🔗 ETHERSCAN_V2_BASE =", ETHERSCAN_V2_BASE, "| chainid =", CHAIN_ID)
+    print("Starting Etherscan V2 network sample fetch...")
+    print("DUNE_PATH =", os.path.abspath(DUNE_PATH))
+    print("OUT_PATH  =", os.path.abspath(OUT_PATH))
+    print("ETHERSCAN_V2_BASE =", ETHERSCAN_V2_BASE, "| chainid =", CHAIN_ID)
 
     load_dotenv()
     api_key = os.getenv("ETHERSCAN_API_KEY")
@@ -91,14 +91,14 @@ if __name__ == "__main__":
     if not days:
         raise ValueError(f"No valid days found in {DUNE_PATH} after parsing.")
 
-    print(f"📅 Found {len(days)} days from Dune: {days[0]} → {days[-1]}")
+    print(f"Found {len(days)} days from Dune: {days[0]} → {days[-1]}")
 
     rows = []
     ensure_parent_dir(OUT_PATH)
 
     for i, d in enumerate(days, start=1):
-        ts = int(datetime(d.year, d.month, d.day, 12, 0, 0).timestamp())  # 12:00 UTC sample
-        print(f"\n[{i}/{len(days)}] 📆 {d} @12:00 UTC (ts={ts})")
+        ts = int(datetime(d.year, d.month, d.day, 12, 0, 0).timestamp())  
+        print(f"\n[{i}/{len(days)}] {d} @12:00 UTC (ts={ts})")
 
         try:
             block_no = get_block_by_time(ts, api_key)
@@ -121,14 +121,14 @@ if __name__ == "__main__":
                 }
             )
 
-            print(f"   ✅ block={block_no} txs={tx_count} base_fee_gwei={base_fee_wei/1e9:.2f}")
+            print(f"   block={block_no} txs={tx_count} base_fee_gwei={base_fee_wei/1e9:.2f}")
 
         except Exception as e:
-            print(f"   ❌ Failed for day {d}: {e}")
+            print(f"   Failed for day {d}: {e}")
 
         time.sleep(0.2)
 
-    # ✅ Fix KeyError when rows empty
+
     if not rows:
         raise RuntimeError(
             "No rows collected from Etherscan V2. "
@@ -138,6 +138,6 @@ if __name__ == "__main__":
     out_df = pd.DataFrame(rows).sort_values("day").reset_index(drop=True)
     out_df.to_csv(OUT_PATH, index=False)
 
-    print(f"\n✅ Saved {len(out_df)} rows → {OUT_PATH}")
-    print("📌 Saved file exists?", os.path.exists(OUT_PATH))
+    print(f"\nSaved {len(out_df)} rows → {OUT_PATH}")
+    print("Saved file exists?", os.path.exists(OUT_PATH))
 

@@ -16,7 +16,6 @@ def load_view(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     if df.empty:
         raise RuntimeError("View v_cex_eth_macro_with_network returned 0 rows.")
 
-    # Ensure proper types
     df["day"] = pd.to_datetime(df["day"])
     for col in [
         "eth_inflow", "eth_outflow", "netflow_eth",
@@ -30,7 +29,7 @@ def load_view(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
 
 
 def print_healthcheck(df: pd.DataFrame) -> None:
-    print("\n🧪 Health check:")
+    print("\nHealth check:")
     print("Rows:", len(df))
     print("Date range:", df["day"].min().date(), "→", df["day"].max().date())
 
@@ -46,11 +45,8 @@ def print_healthcheck(df: pd.DataFrame) -> None:
 
 def add_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    # Next-day return
     df["next_day_return"] = df["daily_return"].shift(-1)
 
-    # Whale-ish days proxy (network fee spikes) - optional simple label
-    # You can remove this if you want.
     df["fee_spike"] = df["block_base_fee_gwei"] > df["block_base_fee_gwei"].rolling(7, min_periods=3).mean() * 1.25
 
     return df
@@ -73,15 +69,15 @@ def print_top_days(df: pd.DataFrame, n: int = 15) -> None:
     outflow = df.sort_values("netflow_eth", ascending=True).head(n)[show_cols]
     inflow = df.sort_values("netflow_eth", ascending=False).head(n)[show_cols]
 
-    print(f"\n🔥 Top {n} days net OUTFLOW (most negative netflow_eth):")
+    print(f"\nTop {n} days net OUTFLOW (most negative netflow_eth):")
     print(outflow.to_string(index=False))
 
-    print(f"\n💧 Top {n} days net INFLOW (most positive netflow_eth):")
+    print(f"\nTop {n} days net INFLOW (most positive netflow_eth):")
     print(inflow.to_string(index=False))
 
 
 def print_correlations(df: pd.DataFrame) -> None:
-    print("\n📊 Correlations:")
+    print("\nCorrelations:")
     print("Corr(netflow_eth, daily_return same day) =", round(corr(df["netflow_eth"], df["daily_return"]), 4))
     if "next_day_return" in df.columns:
         print("Corr(netflow_eth, next_day_return)      =", round(corr(df["netflow_eth"], df["next_day_return"]), 4))
@@ -99,12 +95,12 @@ def save_full(df: pd.DataFrame) -> None:
     df_out = df.copy()
     df_out["day"] = df_out["day"].dt.date  # nicer for CSV
     df_out.to_csv(OUT_PATH, index=False)
-    print(f"\n✅ Saved full joined series to {OUT_PATH}")
+    print(f"\nSaved full joined series to {OUT_PATH}")
 
 
 if __name__ == "__main__":
     print(">>> Running explore_liquidity.py (macro + price + etherscan network)")
-
+<|fim_middle|><|fim_middle|><|fim_middle|>
     if not os.path.exists(DB_PATH):
         raise FileNotFoundError(f"DuckDB not found: {DB_PATH}. Run build_warehouse.py first.")
 
@@ -123,7 +119,6 @@ if __name__ == "__main__":
 
     print_correlations(df)
 
-    # Optional: quick fee spike overview
     if "fee_spike" in df.columns:
         spike_days = df[df["fee_spike"] == True][["day", "block_base_fee_gwei", "netflow_eth", "daily_return"]].copy()
         if not spike_days.empty:

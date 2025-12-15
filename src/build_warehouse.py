@@ -5,7 +5,6 @@ os.makedirs("warehouse", exist_ok=True)
 DB_PATH = "warehouse/eth_cex.duckdb"
 con = duckdb.connect(DB_PATH)
 
-# Dune (macro)
 con.execute("""
 CREATE OR REPLACE TABLE fact_cex_eth_flows AS
 SELECT
@@ -16,7 +15,6 @@ SELECT
 FROM read_csv_auto('data/processed/dune/cex_eth_flows_daily.csv');
 """)
 
-# Binance (price)
 con.execute("""
 CREATE OR REPLACE TABLE fact_eth_price AS
 SELECT
@@ -27,7 +25,6 @@ SELECT
 FROM read_csv_auto('data/processed/binance/eth_price_daily.csv');
 """)
 
-# Etherscan (network sample)
 con.execute("""
 CREATE OR REPLACE TABLE fact_eth_network_sample AS
 SELECT
@@ -41,7 +38,6 @@ SELECT
 FROM read_csv_auto('data/processed/etherscan/network_sample_daily.csv');
 """)
 
-# View: macro + price + network
 con.execute("""
 CREATE OR REPLACE VIEW v_cex_eth_macro_with_network AS
 SELECT
@@ -63,7 +59,7 @@ LEFT JOIN fact_eth_price p
     ON f.day = p.day;
 """)
 
-print("✅ DuckDB warehouse built at:", DB_PATH)
+print("DuckDB warehouse built at:", DB_PATH)
 print(con.execute("SELECT COUNT(*) AS n FROM v_cex_eth_macro_with_network").df())
 
 con.close()
