@@ -48,13 +48,7 @@ The goal is not trading signals, but structuring raw on-chain & market data into
 
 - Exploration via Jupyter Notebook (EDA).
 
-Raw APIs / Dune
-      ↓
-Daily processed tables
-      ↓
-DuckDB analytics warehouse
-      ↓
-EDA & liquidity analysis
+Raw APIs / Dune -> Daily processed tables -> DuckDB analytics warehouse -> EDA & liquidity analysis
 
 ---
 
