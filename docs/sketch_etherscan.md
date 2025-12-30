@@ -1,6 +1,6 @@
-Sketch: Etherscan Network Enrichment (API V2)
+# Sketch: Etherscan Network Enrichment (API V2)
 
-*Purpose
+## Purpose
 
 This project builds a small, production-flavored analytics warehouse by combining:
 
@@ -12,23 +12,25 @@ Etherscan (on-chain network context): block-level network metrics sampled daily
 
 The goal is not to replicate full exchange wallet labeling (Nansen/CryptoQuant style), but to demonstrate data engineering fundamentals: multi-source ingestion, normalization, modeling, warehousing, and analysis-ready views.
 
-*What We Extract from Etherscan
+---
 
-We collect daily network metrics by sampling one representative Ethereum block per day.
+## What I Extract from Etherscan
 
-Sampling Strategy
+I collect daily network metrics by sampling one representative Ethereum block per day.
 
-For each day present in Dune data, we sample the block closest before 12:00 UTC
+- Sampling Strategy
 
-This yields a stable daily snapshot aligned with the Dune calendar
+- For each day present in Dune data, I sample the block closest before 12:00 UTC
 
-Etherscan API (V2)
+- This yields a stable daily snapshot aligned with the Dune calendar
 
-Base: https://api.etherscan.io/v2/api
+- Etherscan API (V2)
 
-chainid=1 (Ethereum mainnet)
+- Base: https://api.etherscan.io/v2/api
 
-Endpoints used:
+- chainid=1 (Ethereum mainnet)
+
+- Endpoints used:
 
 module=block&action=getblocknobytime
 → timestamp → block number
@@ -36,7 +38,9 @@ module=block&action=getblocknobytime
 module=proxy&action=eth_getBlockByNumber
 → block number → block header + tx list
 
-Output Dataset
+---
+
+## Output Dataset
 
 Generated file:
 
@@ -53,27 +57,32 @@ Schema:
 | `block_gas_used_ratio` | DOUBLE | `gas_used / gas_limit` (congestion proxy) |
 | `block_base_fee_gwei`  | DOUBLE | EIP-1559 base fee (fee pressure proxy)    |
 
-*How It Fits in the Warehouse
+---
+
+## How It Fits in the Warehouse
+
 Fact tables (DuckDB)
 
-fact_cex_eth_flows (Dune)
+- fact_cex_eth_flows (Dune)
 
-fact_eth_price (Binance)
+- fact_eth_price (Binance)
 
-fact_eth_network_sample (Etherscan)
+- fact_eth_network_sample (Etherscan)
 
-*Analysis View
+---
+
+## Analysis View
 
 v_cex_eth_macro_with_network joins all three sources at the daily level:
 
-macro flows (Dune)
+- macro flows (Dune)
 
-market context (Binance)
+- market context (Binance)
 
-network conditions (Etherscan)
+- network conditions (Etherscan)
 
 This enables analysis questions such as:
 
-Do strong net outflows coincide with higher base fees or congestion?
+- Do strong net outflows coincide with higher base fees or congestion?
 
-Is netflow more correlated with on-chain activity (tx_count) or market returns?
+- Is netflow more correlated with on-chain activity (tx_count) or market returns?
