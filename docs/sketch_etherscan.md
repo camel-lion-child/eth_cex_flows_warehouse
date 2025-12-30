@@ -81,7 +81,7 @@ By joining all three sources at the daily level:
 
 - network conditions (Etherscan)
 
-Enabling analysis questions such as:
+We can enable analysis questions such as:
 
 - Do strong net outflows coincide with higher base fees or congestion?
 
