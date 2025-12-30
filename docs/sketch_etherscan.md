@@ -73,7 +73,7 @@ Fact tables (DuckDB)
 
 ## Analysis View
 
-By joining all three sources at the daily level:
+v_cex_eth_macro_with_network (warehouse/eth_cex.duckdb) joins all three sources at the daily level:
 
 - macro flows (Dune)
 
@@ -81,7 +81,7 @@ By joining all three sources at the daily level:
 
 - network conditions (Etherscan)
 
-We can enable analysis questions such as:
+This enable analysis questions such as:
 
 - Do strong net outflows coincide with higher base fees or congestion?
 
