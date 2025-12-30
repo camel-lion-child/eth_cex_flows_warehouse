@@ -10,7 +10,7 @@ The goal is not trading signals, but structuring raw on-chain & market data into
 
 ---
 
-##Tech Stack
+## Tech Stack
 
 - Python — data ingestion, processing, orchestration.
 
@@ -28,7 +28,7 @@ The goal is not trading signals, but structuring raw on-chain & market data into
 
 ---
 
-##Data Sources
+## Data Sources
 
 - Dune — aggregated ETH CEX flows (inflow, outflow, netflow).
 
@@ -38,7 +38,7 @@ The goal is not trading signals, but structuring raw on-chain & market data into
 
 ---
 
-##Architecture
+## Architecture
 
 - Raw data ingestion via Python scripts.
 
@@ -58,7 +58,7 @@ EDA & liquidity analysis
 
 ---
 
-##Pipeline
+## Pipeline
 
 - Fetch raw data from Dune, Binance, Etherscan.
 
@@ -70,7 +70,7 @@ EDA & liquidity analysis
 
 ---
 
-##Key Analyses
+## Key Analyses
 
 - ETH inflow / outflow dynamics across CEXs.
 
@@ -82,7 +82,7 @@ EDA & liquidity analysis
 
 ---
 
-##Why This Project
+## Why This Project
 
 This project reflects a Data Engineering → Analytics Engineering mindset applied to DeFi / crypto markets:
 
@@ -96,7 +96,7 @@ This project reflects a Data Engineering → Analytics Engineering mindset appli
 
 ---
 
-##Future Extensions
+## Future Extensions
 
 - Incremental ingestion.
   
