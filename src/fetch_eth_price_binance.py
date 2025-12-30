@@ -11,11 +11,6 @@ BINANCE_URL = "https://api.binance.com/api/v3/klines"
 
 
 def fetch_binance_kline(limit=1000, end_time=None):
-    """
-    Fetch ETHUSDT daily candles (kline) from Binance.
-    limit max = 1000 candles
-    end_time = timestamp in ms
-    """
 
     params = {
         "symbol": "ETHUSDT",
