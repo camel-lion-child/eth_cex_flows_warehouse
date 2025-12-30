@@ -8,7 +8,6 @@ WITH cex AS (
   )
 ),
 
---  (Outflow)
 outflow AS (
   SELECT
     date_trunc('day', t.block_time) AS day,
@@ -22,7 +21,6 @@ outflow AS (
   GROUP BY 1
 ),
 
--- (Inflow)
 inflow AS (
   SELECT
     date_trunc('day', t.block_time) AS day,
@@ -44,6 +42,7 @@ FROM outflow o
 FULL OUTER JOIN inflow i
   ON o.day = i.day
 ORDER BY day ASC;
+
 -- This query calculates the daily inflow and outflow of ETH to and from centralized exchanges (CEXs) over the last 30 days.
 -- It identifies CEX addresses from the labels.addresses table, then aggregates the inflows and outflows from the ethereum.traces table.
 -- The results are presented in a single table with columns for the day, ETH outflow, and ETH inflow.
