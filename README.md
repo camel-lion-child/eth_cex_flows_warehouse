@@ -14,7 +14,7 @@ The goal is not trading signals, but structuring raw on-chain & market data into
 
 - Python — data ingestion, processing, orchestration.
 
-- DuckDB — analytical warehouse (OLAP, columnar).
+- DuckDB — analytical warehouse (OLAP Online Analytical Processing, columnar).
 
 - Dune Analytics — on-chain aggregated CEX flow data.
 
