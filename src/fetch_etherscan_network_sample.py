@@ -14,10 +14,7 @@ OUT_PATH = "data/processed/etherscan/network_sample_daily.csv"
 
 
 def get_block_by_time(ts: int, api_key: str) -> int:
-    """
-    V2: module=block&action=getblocknobytime + chainid
-    Docs: Get Block Number by Timestamp
-    """
+    
     params = {
         "chainid": CHAIN_ID,
         "module": "block",
@@ -34,10 +31,7 @@ def get_block_by_time(ts: int, api_key: str) -> int:
 
 
 def get_block_detail(block_number: int, api_key: str) -> dict:
-    """
-    V2: module=proxy&action=eth_getBlockByNumber + chainid
-    Docs: eth_getBlockByNumber
-    """
+   
     params = {
         "chainid": CHAIN_ID,
         "module": "proxy",
