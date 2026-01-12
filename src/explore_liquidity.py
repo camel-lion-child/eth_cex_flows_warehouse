@@ -93,7 +93,7 @@ def print_correlations(df: pd.DataFrame) -> None:
 def save_full(df: pd.DataFrame) -> None:
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     df_out = df.copy()
-    df_out["day"] = df_out["day"].dt.date  # nicer for CSV
+    df_out["day"] = df_out["day"].dt.date  
     df_out.to_csv(OUT_PATH, index=False)
     print(f"\nSaved full joined series to {OUT_PATH}")
 
