@@ -37,7 +37,7 @@ def wait_for_results(api_key: str, execution_id: str, poll_interval: float = 3.0
     url = f"{BASE_URL}/execution/{execution_id}/status"
     headers = {"x-dune-api-key": api_key}
 
-    print(f"⏳ Waiting for Dune query {execution_id} to finish...")
+    print(f" Waiting for Dune query {execution_id} to finish...")
     while True:
         resp = requests.get(url, headers=headers)
         data = resp.json()
