@@ -42,7 +42,7 @@ def fetch_full_history():
     all_df = []
     end_time = None
 
-    print("🔎 Fetching full ETH price history from Binance...")
+    print("Fetching full ETH price history from Binance...")
 
     for i in range(5): 
         print(f"   → Fetching chunk {i+1}/5")
