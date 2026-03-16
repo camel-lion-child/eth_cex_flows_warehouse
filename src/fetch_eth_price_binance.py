@@ -45,7 +45,7 @@ def fetch_full_history():
     print("Fetching full ETH price history from Binance...")
 
     for i in range(5): 
-        print(f"   → Fetching chunk {i+1}/5")
+        print(f"  Fetching chunk {i+1}/5")
 
         df = fetch_binance_kline(limit=1000, end_time=end_time)
         if df.empty:
