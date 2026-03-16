@@ -43,7 +43,7 @@ def wait_for_results(api_key: str, execution_id: str, poll_interval: float = 3.0
         data = resp.json()
         state = data.get("state") or data.get("execution_state")
 
-        print(f"   → state = {state}")
+        print(f" state = {state}")
 
         if state in ("QUERY_STATE_COMPLETED", "COMPLETED"):
             break
