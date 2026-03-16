@@ -12,29 +12,29 @@ The goal is not trading signals, but structuring raw on-chain & market data into
 
 ## Tech Stack
 
-- Python — data ingestion, processing, orchestration.
+- Python: data ingestion, processing, orchestration.
 
-- DuckDB — analytical warehouse (OLAP Online Analytical Processing, columnar).
+- DuckDB: analytical warehouse (OLAP Online Analytical Processing, columnar).
 
-- Dune Analytics — on-chain aggregated CEX flow data.
+- Dune Analytics: on-chain aggregated CEX flow data.
 
-- Binance API — market price & returns.
+- Binance API: market price & returns.
 
-- Etherscan API — Ethereum network activity metrics.
+- Etherscan API: Ethereum network activity metrics.
 
-- Pandas / NumPy — data transformation & aggregation.
+- Pandas / NumPy: data transformation & aggregation.
 
-- Jupyter Notebook — exploratory data analysis (EDA).
+- Jupyter Notebook: exploratory data analysis (EDA).
 
 ---
 
 ## Data Sources
 
-- Dune — aggregated ETH CEX flows (inflow, outflow, netflow).
+- Dune: aggregated ETH CEX flows (inflow, outflow, netflow).
 
-- Binance — ETH daily price & returns.
+- Binance: ETH daily price & returns.
 
-- Etherscan (sampled) — network activity metrics (base fee, tx count, gas usage ratio).
+- Etherscan (sampled): network activity metrics (base fee, tx count, gas usage ratio).
 
 ---
 
