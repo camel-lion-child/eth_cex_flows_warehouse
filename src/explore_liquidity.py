@@ -1,3 +1,11 @@
+""" This script reads a joined DuckDB analytical view, adds derived features, checks data quality, 
+and explores relationships between ETH net flows, market returns, and Ethereum network activity.
+
+Ce script lit une vue analytique jointe dans DuckDB, ajoute des variables dérivées, 
+contrôle la qualité des données et explore les relations entre les flux nets ETH, 
+les rendements de marché et l’activité du réseau Ethereum."""
+
+
 import os
 import duckdb
 import pandas as pd
@@ -6,17 +14,19 @@ DB_PATH = "warehouse/eth_cex.duckdb"
 OUT_PATH = "data/analysis/cex_eth_liquidity_full.csv"
 
 
-def load_view(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
+def load_view(con: duckdb.DuckDBPyConnection) -> pd.DataFrame: #load full join view combining CEX flow, macro, price & network data
     df = con.execute("""
         SELECT *
         FROM v_cex_eth_macro_with_network
         ORDER BY day
     """).df()
 
-    if df.empty:
+    if df.empty: #stop if the analytical view is empty
         raise RuntimeError("View v_cex_eth_macro_with_network returned 0 rows.")
 
     df["day"] = pd.to_datetime(df["day"])
+
+    #cast key analytical columns to numeric format
     for col in [
         "eth_inflow", "eth_outflow", "netflow_eth",
         "block_tx_count", "block_gas_used_ratio", "block_base_fee_gwei",
@@ -28,11 +38,12 @@ def load_view(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     return df
 
 
-def print_healthcheck(df: pd.DataFrame) -> None:
+def print_healthcheck(df: pd.DataFrame) -> None: 
     print("\nHealth check:")
     print("Rows:", len(df))
     print("Date range:", df["day"].min().date(), "→", df["day"].max().date())
 
+    #check missing values for key business metrics
     cols_to_check = [
         "eth_inflow", "eth_outflow", "netflow_eth",
         "price_usd", "daily_return",
@@ -44,16 +55,18 @@ def print_healthcheck(df: pd.DataFrame) -> None:
 
 
 def add_features(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    df["next_day_return"] = df["daily_return"].shift(-1)
+    df = df.copy() #create a copy to avoid modifying the oroginal dataframe
+    
+    df["next_day_return"] = df["daily_return"].shift(-1) #shift daily return to create a next day return target
 
+    #flag days where base fee is significantly above its recent 7-day average
     df["fee_spike"] = df["block_base_fee_gwei"] > df["block_base_fee_gwei"].rolling(7, min_periods=3).mean() * 1.25
 
     return df
 
 
 def corr(a: pd.Series, b: pd.Series) -> float:
-    x = pd.to_numeric(a, errors="coerce")
+    x = pd.to_numeric(a, errors="coerce") #sately convert both series to numeric before computing correlation
     y = pd.to_numeric(b, errors="coerce")
     return x.corr(y)
 
@@ -66,6 +79,7 @@ def print_top_days(df: pd.DataFrame, n: int = 15) -> None:
     ]
     show_cols = [c for c in show_cols if c in df.columns]
 
+    #indentify teh strongest net outflow days & strongest net inflow days
     outflow = df.sort_values("netflow_eth", ascending=True).head(n)[show_cols]
     inflow = df.sort_values("netflow_eth", ascending=False).head(n)[show_cols]
 
@@ -77,6 +91,7 @@ def print_top_days(df: pd.DataFrame, n: int = 15) -> None:
 
 
 def print_correlations(df: pd.DataFrame) -> None:
+    #measure the relationships between net flows & market / network indicators
     print("\nCorrelations:")
     print("Corr(netflow_eth, daily_return same day) =", round(corr(df["netflow_eth"], df["daily_return"]), 4))
     if "next_day_return" in df.columns:
@@ -91,7 +106,7 @@ def print_correlations(df: pd.DataFrame) -> None:
 
 
 def save_full(df: pd.DataFrame) -> None:
-    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
+    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True) #ensure the output folder exists before saving
     df_out = df.copy()
     df_out["day"] = df_out["day"].dt.date  
     df_out.to_csv(OUT_PATH, index=False)
@@ -100,25 +115,26 @@ def save_full(df: pd.DataFrame) -> None:
 
 if __name__ == "__main__":
     print(">>> Running explore_liquidity.py (macro + price + etherscan network)")
-<|fim_middle|><|fim_middle|><|fim_middle|>
+    #make sure DuckDB warehouse exists before analysis
     if not os.path.exists(DB_PATH):
         raise FileNotFoundError(f"DuckDB not found: {DB_PATH}. Run build_warehouse.py first.")
 
+    #open DuckDB connection & load the analytical view
     con = duckdb.connect(DB_PATH)
-
     df = load_view(con)
     con.close()
 
-    print_healthcheck(df)
+    print_healthcheck(df) #validate dataset coverage and completeness
 
-    df = add_features(df)
+    df = add_features(df) #add derived analytical features
 
-    save_full(df)
+    save_full(df) #save full enriched dataset for re-use
 
-    print_top_days(df, n=15)
+    print_top_days(df, n=15) #display the most extreme liquidity flow days
 
-    print_correlations(df)
+    print_correlations(df) #print simple correlation analysis
 
+    #show days with unusually high ETH base fees
     if "fee_spike" in df.columns:
         spike_days = df[df["fee_spike"] == True][["day", "block_base_fee_gwei", "netflow_eth", "daily_return"]].copy()
         if not spike_days.empty:
