@@ -1,6 +1,13 @@
+-- This query identifies known CEX addresses, computes daily ETH inflows and outflows from Ethereum trace data, 
+-- and combines them into a single daily time series
+
+-- Cette requête identifie les adresses connues de CEX, calcule les flux quotidiens entrants et sortants d’ETH à partir des traces Ethereum, 
+-- puis les regroupe dans une seule série temporelle journalière.
+
+-- indentify all known CEX wallet address
 WITH cex AS (
   SELECT DISTINCT
-    LOWER(TRY_CAST(address AS VARCHAR)) AS addr
+    LOWER(TRY_CAST(address AS VARCHAR)) AS addr --normalize addresses to lowercase to ensure consistent matching
   FROM labels.addresses
   WHERE REGEXP_LIKE(
     LOWER(name),
@@ -8,19 +15,21 @@ WITH cex AS (
   )
 ),
 
+-- compute ETH outflows from CEXs to non-CEX address
 outflow AS (
   SELECT
     date_trunc('day', t.block_time) AS day,
-    SUM(TRY_CAST(t.value AS DOUBLE) / 1e18) AS eth_outflow
+    SUM(TRY_CAST(t.value AS DOUBLE) / 1e18) AS eth_outflow --sum ETH value (convert from wei to ETH by dividing by 1e18)
   FROM ethereum.traces AS t
   WHERE
-    LOWER(TRY_CAST(t."from" AS VARCHAR)) IN (SELECT addr FROM cex)
-    AND LOWER(TRY_CAST(t."to" AS VARCHAR)) NOT IN (SELECT addr FROM cex)
-    AND t.success = TRUE
+    LOWER(TRY_CAST(t."from" AS VARCHAR)) IN (SELECT addr FROM cex) --transactions sent from CEX addresses
+    AND LOWER(TRY_CAST(t."to" AS VARCHAR)) NOT IN (SELECT addr FROM cex) --exclude transfers between CEXs & keep only external outflows
+    AND t.success = TRUE -- only sucessful transactions
     AND t.block_time >= CURRENT_TIMESTAMP - INTERVAL '30' DAY
   GROUP BY 1
 ),
 
+-- compute ETH inflows to CEX from non-CEX addresses
 inflow AS (
   SELECT
     date_trunc('day', t.block_time) AS day,
@@ -34,9 +43,10 @@ inflow AS (
   GROUP BY 1
 )
 
+-- combine inflows & outflows into a single daily dataset
 SELECT
-  COALESCE(o.day, i.day) AS day,
-  COALESCE(eth_outflow, 0) AS eth_outflow,
+  COALESCE(o.day, i.day) AS day, -- merge date from both tables in case one side is missing
+  COALESCE(eth_outflow, 0) AS eth_outflow, --replace NULL with 0 for missing values
   COALESCE(eth_inflow, 0) AS eth_inflow
 FROM outflow o
 FULL OUTER JOIN inflow i
