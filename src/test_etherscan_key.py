@@ -1,20 +1,30 @@
+# This script is used to test whether an Etherscan API key works correctly by retrieving the ETH balance of a specific wallet address 
+# using the Etherscan V2 API.
+
+# Ce script permet de tester si une clé API Etherscan fonctionne correctement en récupérant le solde ETH d’une adresse 
+# via l’API Etherscan V2.
+
 import os
 import requests
-from dotenv import load_dotenv
+from dotenv import load_dotenv #to securely load API keys from a .env file
 
 print(">>> Running test_etherscan_key.py (USING V2 API)")
 
+# Load environment variables
 load_dotenv()
 api_key = os.getenv("ETHERSCAN_API_KEY")
 
 print(">>> Loaded ETHERSCAN_API_KEY:", repr(api_key))
 
+# Ensures the API key exists before continuing
+# Stops execution if missing (fail fast)
 if not api_key:
     print("!!! ERROR: api_key is None. Check your .env file.")
     raise SystemExit(1)
 
-url = "https://api.etherscan.io/v2/api"
+url = "https://api.etherscan.io/v2/api" #Etherscan V2 API base URL
 
+# REST APIs with query parameters
 params = {
     "chainid": 1,
     "module": "account",
@@ -24,7 +34,7 @@ params = {
 }
 
 print(">>> Sending request to Etherscan V2...")
-response = requests.get(url, params=params)
+response = requests.get(url, params=params) # send request to Etherscan
 print(">>> HTTP status:", response.status_code)
 print(">>> Raw response (from V2):")
 print(response.text)
