@@ -1,10 +1,17 @@
+"""I built a DuckDB warehouse by ingesting multiple data sources (Dune, Binance, Etherscan) into fact tables 
+and joining them into a unified analytical view for DeFi analysis.
+
+J’ai construit un data warehouse DuckDB en intégrant plusieurs sources (Dune, Binance, Etherscan) dans des tables de faits, 
+puis en les joignant dans une vue analytique unifiée pour l’analyse DeFi."""
+
 import os
 import duckdb
 
-os.makedirs("warehouse", exist_ok=True)
+os.makedirs("warehouse", exist_ok=True) #ensure the warehouse folder exists before creating the database
 DB_PATH = "warehouse/eth_cex.duckdb"
 con = duckdb.connect(DB_PATH)
 
+#fact table for CEX ETH flows from Dune dataset
 con.execute("""
 CREATE OR REPLACE TABLE fact_cex_eth_flows AS
 SELECT
@@ -15,6 +22,7 @@ SELECT
 FROM read_csv_auto('data/processed/dune/cex_eth_flows_daily.csv');
 """)
 
+#fact table for ETH market data from Binance dataset
 con.execute("""
 CREATE OR REPLACE TABLE fact_eth_price AS
 SELECT
@@ -25,6 +33,7 @@ SELECT
 FROM read_csv_auto('data/processed/binance/eth_price_daily.csv');
 """)
 
+#fact table for ETH network metrics from Etherscan dataset
 con.execute("""
 CREATE OR REPLACE TABLE fact_eth_network_sample AS
 SELECT
@@ -38,6 +47,7 @@ SELECT
 FROM read_csv_auto('data/processed/etherscan/network_sample_daily.csv');
 """)
 
+#build a unified analytical view combining flows, price & network data
 con.execute("""
 CREATE OR REPLACE VIEW v_cex_eth_macro_with_network AS
 SELECT
@@ -59,8 +69,9 @@ LEFT JOIN fact_eth_price p
     ON f.day = p.day;
 """)
 
+#print confirmation and basic row count from the analytical view
 print("DuckDB warehouse built at:", DB_PATH)
 print(con.execute("SELECT COUNT(*) AS n FROM v_cex_eth_macro_with_network").df())
 
-con.close()
+con.close() #close database connection
 
