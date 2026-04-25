@@ -4,6 +4,7 @@
 -- Cette requête identifie les adresses connues de CEX, calcule les flux quotidiens entrants et sortants d’ETH à partir des traces Ethereum, 
 -- puis les regroupe dans une seule série temporelle journalière.
 
+
 -- indentify all known CEX wallet address
 WITH cex AS (
   SELECT DISTINCT
